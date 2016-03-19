@@ -3,12 +3,17 @@
 angular.module('confusionApp')
 
 .controller('MenuController', ['$scope', 'menuFactory', function ($scope, menuFactory) {
-
     $scope.tab = 1;
     $scope.filtText = '';
     $scope.showDetails = false;
 
-    $scope.dishes = menuFactory.getDishes();
+    $scope.dishes = [];
+    menuFactory.getDishes()
+        .then(
+            function (response) {
+                $scope.dishes = response.data;
+            }
+        );
 
 
     $scope.select = function (setTab) {
@@ -32,10 +37,9 @@ angular.module('confusionApp')
     $scope.toggleDetails = function () {
         $scope.showDetails = !$scope.showDetails;
     };
-        }])
+}])
 
 .controller('ContactController', ['$scope', function ($scope) {
-
     $scope.feedback = {
         mychannel: "",
         firstName: "",
@@ -54,11 +58,9 @@ angular.module('confusionApp')
 
     $scope.channels = channels;
     $scope.invalidChannelSelection = false;
-
-        }])
+}])
 
 .controller('FeedbackController', ['$scope', function ($scope) {
-
     $scope.sendFeedback = function () {
 
         console.log($scope.feedback);
@@ -80,18 +82,20 @@ angular.module('confusionApp')
             console.log($scope.feedback);
         }
     };
-        }])
+}])
 
 .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', function ($scope, $stateParams, menuFactory) {
-
-    var dish = menuFactory.getDish(parseInt($stateParams.id, 10));
-
-    $scope.dish = dish;
-
-        }])
+    $scope.dish = {};
+    menuFactory.getDish(parseInt($stateParams.id, 10))
+        .then(
+            function (response) {
+                $scope.dish = response.data;
+                $scope.showDish = true;
+            }
+        );
+}])
 
 .controller('DishCommentController', ['$scope', function ($scope) {
-
     $scope.mycomment = {
         rating: 5,
         comment: "",
@@ -99,8 +103,8 @@ angular.module('confusionApp')
         date: ""
     };
 
-    $scope.submitComment = function () {
 
+    $scope.submitComment = function () {
         $scope.mycomment.date = new Date().toISOString();
         console.log($scope.mycomment);
 
@@ -115,14 +119,21 @@ angular.module('confusionApp')
             date: ""
         };
     }
-        }])
+}])
 
 // implement the IndexController and About Controller here
 .controller('IndexController', ['$scope', 'menuFactory', 'corporateFactory', function ($scope, menuFactory, corporateFactory) {
-    var promotion = menuFactory.getPromotion(0);
-    $scope.promotion = promotion;
-    $scope.featuredDish = menuFactory.getDish(0);
-    $scope.featuredLeader = corporateFactory.getLeader(3);
+
+    $scope.leader = corporateFactory.getLeader(3);
+    $scope.promotion = menuFactory.getPromotion(0);
+    $scope.dish = {};
+    menuFactory.getDish(0)
+        .then(
+            function (response) {
+                $scope.dish = response.data;
+                $scope.showDish = true;
+            }
+        );
 }])
 
 .controller('AboutController', ['$scope', 'corporateFactory', function ($scope, corporateFactory) {
