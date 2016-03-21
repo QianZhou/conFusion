@@ -131,9 +131,35 @@ angular.module('confusionApp')
 
 // implement the IndexController and About Controller here
 .controller('IndexController', ['$scope', 'menuFactory', 'corporateFactory', function ($scope, menuFactory, corporateFactory) {
+    $scope.showLeader = false;
+    $scope.message = "Loading ...";
+    $scope.leader = corporateFactory.getLeaders().get({
+            id: 3
+        })
+        .$promise.then(
+            function (response) {
+                $scope.leader = response;
+                $scope.showLeader = true;
+            },
+            function (response) {
+                $scope.message = "Error: " + response.status + " " + response.statusText;
+            }
+        );
 
-    $scope.leader = corporateFactory.getLeader(3);
-    $scope.promotion = menuFactory.getPromotion(0);
+    $scope.showPromotion = false;
+    $scope.message = "Loading ...";
+    $scope.promotion = menuFactory.getPromotions().get({
+            id: 0
+        })
+        .$promise.then(
+            function (response) {
+                $scope.promotion = response;
+                $scope.showPromotion = true;
+            },
+            function (response) {
+                $scope.message = "Error: " + response.status + " " + response.statusText;
+            }
+        );
 
     $scope.showDish = false;
     $scope.message = "Loading ...";
@@ -152,6 +178,23 @@ angular.module('confusionApp')
 }])
 
 .controller('AboutController', ['$scope', 'corporateFactory', function ($scope, corporateFactory) {
-    var leadership = corporateFactory.getLeaders();
-    $scope.leadership = leadership;
+
+    $scope.showLeadership = false;
+    $scope.message = "Loading ...";
+    corporateFactory.getLeaders().query(
+        function (response) {
+            $scope.leadership = response;
+            $scope.showLeadership = true;
+        },
+        function (response) {
+            $scope.message = "Error: " + response.status + " " + response.statusText;
+        });
+}])
+
+
+.controller('FeedbackController', ['$scope', 'feedbackFactory', function ($scope, feedbackFactory) {
+
+    $scope.sendFeedback = function () {
+
+    };
 }]);
